@@ -130,21 +130,56 @@ function aboutController(){
     echo "about";
 }
 
-function singleImageEditController(){
+function updateImage($connection, $id, $title){
+    if ($statement = mysqli_prepare($connection, 'UPDATE photos SET title = ? WHERE id = ?'))
+    {
+        mysqli_stmt_bind_param($statement, "si", $title,$id);
+        mysqli_stmt_execute($statement);;
+    }
+    else
+    {
+        logMessage('ERROR','Query error: '. mysqli_error($connection));
+        errorPage();
+    }
+}
+
+function singleImageEditController($params){
+    $title = $_POST["title"];
+    $id = $params["id"];
+    $connection = getConnection();
+    updateImage($connection, $id, $title);
     return[
-        "404",
+        "redirect:/php_basics/image/$id",
         [
-            "title" => "Single image edit"
         ]
     ];
 }
 
-function singleImageDeleteController(){
+function esc($string){
+    echo htmlspecialchars($string);
+}
+
+function deleteImage($connection, $id){
+    if ($statement = mysqli_prepare($connection, 'DELETE FROM photos WHERE id = ?'))
+    {
+        mysqli_stmt_bind_param($statement, "i", $id);
+        mysqli_stmt_execute($statement);;
+    }
+    else
+    {
+        logMessage('ERROR','Query error: '. mysqli_error($connection));
+        errorPage();
+    }
+}
+
+function singleImageDeleteController($params){
+    $connection = getConnection();
+    $id = $params["id"];
+
+    deleteImage($connection, $id);
     return[
-        "404",
-        [
-            "title" => "Single image delete"
-        ]
+        "redirect:/php_basics/",
+        []
     ];
 }
 
@@ -173,6 +208,42 @@ function singleImageController($params){
             "title" => $image["title"],
             "image" => $image
         ]
+    ];
+}
+
+function loginFormController(){
+    $containsError = array_key_exists("containsError", $_COOKIE);
+    setcookie("containsError", "", time() - 1);
+    return [
+        "login",
+        [
+            "title" => "Login",
+            "containsError" => $containsError
+        ]
+    ];
+}
+
+function loginSubmitController(){
+    $password = trim($_POST["password"]);
+    $email = trim($_POST["email"]);
+    if ($password == "password" && $email == "webdev492@gmail.com"){
+        setcookie("user", $email, time() + 3600);
+        $view = "redirect:/php_basics/";
+    }else{
+        setcookie("containsError", 1, time() + 1);
+        $view = "redirect:/php_basics/login";
+    }
+    return [
+        $view,
+        []
+    ];
+}
+
+function logoutSubmitController(){
+    setcookie("user", "", time() - 1);
+    return [
+        "redirect:/php_basics/",
+        []
     ];
 }
 
