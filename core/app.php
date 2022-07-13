@@ -12,8 +12,6 @@ route('/php_basics/login', 'loginFormController');
 route('/php_basics/logout', 'logoutSubmitController');
 route('/php_basics/login', 'loginSubmitController','POST');
 
-
-
 list($view, $data) = dispatch($cleand, 'notFoundController');
 
 if (preg_match("%^redirect\:%",$view)){
@@ -22,6 +20,6 @@ if (preg_match("%^redirect\:%",$view)){
     die;
 }
 extract($data);
-$loggedIn = array_key_exists("user", $_COOKIE);
+$user = createUser();
 ob_clean();
 require_once "templates/layout.php";
