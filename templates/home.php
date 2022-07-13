@@ -17,7 +17,7 @@
     </form>
     <?php require "pagination.php"; ?>
     <?php foreach ($content as $image):?>
-        <a href="/php_basics/image/<?php echo $image['id'] ?>"><img class="mt-2 mb-2 mx-1" title="<?= $image['title']; ?>" src="<?= $image['thumbnail']; ?>" /></a>
+        <a href="/php_basics/image/<?php esc( $image['id'] ); ?>"><img class="mt-2 mb-2 mx-1" title="<?php esc( $image['title'] ); ?>" src="<?php esc( $image['thumbnail'] ); ?>" /></a>
     <?php endforeach;?>
     <?php require "pagination.php"; ?>
 </main>
